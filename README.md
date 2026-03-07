@@ -65,5 +65,3 @@ python mood_tracker.py
 Your privacy is a priority. This application does not connect to the internet to sync or store your data. Everything is saved locally in a JSON file in the same directory as the script. Please ensure your device is password-protected to keep your data secure.
 
 ---
-
-Would you like me to generate a `requirements.txt` file to go alongside this README, or help you add contribution guidelines?

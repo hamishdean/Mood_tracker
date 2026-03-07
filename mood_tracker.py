@@ -458,6 +458,8 @@ class MoodTrackerApp(tk.Tk):
         nav.pack(fill="x", padx=10, pady=10)
         ttk.Button(nav, text="< Back", command=self.show_history_selection).pack(side="left")
         tk.Label(nav, text=f"History: {topic}", font=("Helvetica", 14, "bold"), bg=BG_COLOR).pack(side="left", padx=20)
+        export_btn = ttk.Button(nav, text="Export Graph")
+        export_btn.pack(side="right")
         raw_entries = [e for e in self.db.data["entries"] if e["topic"] == topic]
         if not raw_entries:
             tk.Label(self.container, text="No entries found for this topic.", bg=BG_COLOR).pack(pady=50)
@@ -504,6 +506,7 @@ class MoodTrackerApp(tk.Tk):
         else:
             ax.text(0.5, 0.5, "No numeric data to display yet.", horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
         ax.grid(True, linestyle='--', alpha=0.6)
+        export_btn.config(command=lambda: self.export_graph(fig, topic))
         canvas = FigureCanvasTkAgg(fig, master=self.container)
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
@@ -517,6 +520,25 @@ class MoodTrackerApp(tk.Tk):
         for e in reversed(valid_entries[-5:]):
             txt_list.insert("end", f"{e['timestamp']} - {e.get('note', '')}\n")
         txt_list.config(state="disabled")
+
+    def export_graph(self, fig, topic):
+        filepath = filedialog.asksaveasfilename(
+            defaultextension=".png",
+            initialfile=f"mood_graph_{topic}",
+            filetypes=[
+                ("PNG Image", "*.png"),
+                ("PDF Document", "*.pdf"),
+                ("JPEG Image", "*.jpg"),
+                ("SVG Image", "*.svg"),
+            ],
+        )
+        if not filepath:
+            return
+        try:
+            fig.savefig(filepath, dpi=150, bbox_inches='tight')
+            messagebox.showinfo("Export Successful", f"Graph saved to:\n{filepath}")
+        except Exception as e:
+            messagebox.showerror("Export Failed", f"Could not save graph:\n{e}")
 
     def show_settings(self):
         self.clear_frame()
